@@ -1,3 +1,4 @@
+// Lucas de Souza Góes (C) 2020
 #include "Scene.h"
 #include "Game.h"
 

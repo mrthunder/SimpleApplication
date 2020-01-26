@@ -9,14 +9,7 @@ enum class KeyCode : int
 	ArrowRight = VK_RIGHT,
 	Z = 0x5A,
 	X = 0x58,
-	Return = VK_RETURN,
-	GamepadLeftThumpstickUp = VK_GAMEPAD_LEFT_THUMBSTICK_UP,
-	GamepadLeftThumpstickDown = VK_GAMEPAD_LEFT_THUMBSTICK_DOWN,
-	GamepadLeftThumpstickLeft = VK_GAMEPAD_LEFT_THUMBSTICK_LEFT,
-	GamepadLeftThumpstickRight = VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT,
-	GamepadButtonA = VK_GAMEPAD_A,
-	GamepadButtonB = VK_GAMEPAD_B,
-	GamepadButtonMenu = VK_GAMEPAD_MENU,
+	Return = VK_RETURN
 };
 
 class InputManager

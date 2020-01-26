@@ -1,12 +1,12 @@
-// SimpleApplication.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// Lucas de Souza Góes (C) 2020
 
 #include <iostream>
 #include "Game.h"
 
+using namespace std;
+
 int main()
 {
-	Game* game = new Game();
-	delete game;
+	unique_ptr<Game> game(new Game());
 }
 

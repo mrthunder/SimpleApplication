@@ -2,6 +2,14 @@
 
 #include "Battle.h"
 #include "InputManager.h"
+#include "Unit.h"
+
+using namespace std;
+
+Battle::Battle(std::shared_ptr<Unit> player, Unit* enemy)
+	: playerPtr(player), enemyPtr(enemy)
+{
+}
 
 void Battle::Update()
 {
@@ -40,11 +48,12 @@ void Battle::Update()
 	
 }
 
-void Battle::Draw(wchar_t* screen, int screenWidth, int screenHeight)
+void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 {
 	const char square = '#';
 	const int UIWidth = 90;
 	const int UIHeight = 27;
+	// Drawing the edge
 	for (int i =0; i < screenWidth; i++)
 	{
 		for (int j = 0; j < screenHeight; j++)
@@ -62,6 +71,7 @@ void Battle::Draw(wchar_t* screen, int screenWidth, int screenHeight)
 	}
 	int lineLength = screenWidth - UIWidth;
 	const string separatorLine = string(lineLength, '#');
+	// Drawing the option menu
 	for (size_t i = 0; i < options.size();i++)
 	{
 		int optionsHeight = UIHeight + 2 *(i*2+1);
@@ -77,7 +87,19 @@ void Battle::Draw(wchar_t* screen, int screenWidth, int screenHeight)
 		DrawToScreen(screen, screenWidth, UIWidth, optionsHeight+2,separatorLine);
 
 	}
+	// Drawing the player information
+	DrawToScreen(screen, screenWidth, 10, UIHeight + 2, "Name: "+playerPtr->getName());
+	DrawToScreen(screen, screenWidth, 10, UIHeight + 3, "-------------");
+	DrawToScreen(screen, screenWidth, 10, UIHeight + 4, playerPtr->getHealthUI());
 
+	// Drawing the enemy information
+	if (enemyPtr != nullptr)
+	{
+		const int enemyWidth = screenWidth * 0.7;
+		DrawToScreen(screen, screenWidth,enemyWidth , 5, "Name: " + enemyPtr->getName());
+		DrawToScreen(screen, screenWidth, enemyWidth, 6, "-------------");
+		DrawToScreen(screen, screenWidth, enemyWidth, 7, enemyPtr->getHealthUI());
+	}
 
 }
 

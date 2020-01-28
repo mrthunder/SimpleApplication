@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include <vector>
 
-using namespace std;
 
 class Game;
 
@@ -14,7 +13,7 @@ public:
 	virtual void Update(Game* const gameRef) override;
 	virtual void Draw(wchar_t* screen, const int screenHeight, const int screenWidth) override;
 private:
-	vector<string> options{ "Play"s, "Exit"s };
+	std::vector<std::string> options{ "Play", "Exit" };
 	int selectedOptionIndex = 0;
 
 };

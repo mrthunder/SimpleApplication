@@ -35,7 +35,7 @@ void Game::GameLoop()
 	{
 		Update();
 		Draw();
-		std::this_thread::sleep_for(150ms);
+		std::this_thread::sleep_for(100ms);
 	}
 	
 }

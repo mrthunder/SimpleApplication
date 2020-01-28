@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include <memory>
 
+class Unit;
 class Battle;
 
 class Colliseum :
@@ -10,9 +11,14 @@ class Colliseum :
 {
 public:
 	Colliseum();
+	~Colliseum();
 	virtual void Update(Game* const gameRef) override;
 	virtual void Draw(wchar_t* screen, const int screenHeight, const int screenWidth) override;
 private:
 	std::shared_ptr<Battle> battlePtr;
+	std::shared_ptr<Unit> playerPtr;
+	Unit* enemyPtr;
+private:
+	void GenerateNewEnemy();
 };
 

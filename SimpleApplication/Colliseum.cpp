@@ -4,12 +4,20 @@
 #include "Game.h"
 #include "MainMenu.h"
 #include "Battle.h"
+#include "Unit.h"
 
 using namespace std;
 
 Colliseum::Colliseum()
 {
-	battlePtr = make_shared<Battle>(Battle());
+	playerPtr = make_shared<Unit>("Player"s,100,20,10,3);
+	enemyPtr = new Unit();
+	battlePtr = make_shared<Battle>(playerPtr,enemyPtr);
+}
+
+Colliseum::~Colliseum()
+{
+	delete enemyPtr;
 }
 
 void Colliseum::Update(Game* const gameRef)
@@ -24,4 +32,11 @@ void Colliseum::Update(Game* const gameRef)
 void Colliseum::Draw(wchar_t* screen, const int screenHeight, const int screenWidth)
 {
 	battlePtr->Draw(screen, screenWidth, screenHeight);
+}
+
+void Colliseum::GenerateNewEnemy()
+{
+	delete enemyPtr;
+	enemyPtr = nullptr;
+	enemyPtr = new Unit();
 }

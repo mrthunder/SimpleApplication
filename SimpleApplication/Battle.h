@@ -2,15 +2,16 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 
-using namespace std;
+class Unit;
 
 class Battle
 {
 public:
-	
+	Battle(std::shared_ptr<Unit> player, Unit* enemy);
 	void Update();
-	void Draw(wchar_t* screen, int screenWidth, int screenHeight);
+	void Draw(wchar_t* screen,const int screenWidth,const int screenHeight);
 	bool IsBattleOver() const;
 private:
 	inline void DrawToScreen(wchar_t* screen, const int screenWidth, int posX, int posY, std::string content)
@@ -22,9 +23,11 @@ private:
 
 	}
 private:
-	vector<string> options{"Attack"s, "Defend"s, "Escape"s };
+	std::vector<std::string> options{"Attack", "Defend", "Escape" };
 	int selectedOptionIndex = 0;
 	bool isBattleOver = false;
+	std::shared_ptr<Unit> playerPtr;
+	Unit* enemyPtr;
 
 };
 

@@ -4,6 +4,8 @@
 #include "Game.h"
 #include "Colliseum.h"
 
+using namespace std;
+
 void MainMenu::Update(Game* const gameRef)
 {
 	if (InputManager::GetKeyDown(KeyCode::ArrowDown))

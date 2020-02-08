@@ -1,5 +1,8 @@
 #pragma once
 #include <Windows.h>
+#include <map>
+
+using std::map;
 
 enum class KeyCode : int
 {
@@ -17,14 +20,43 @@ class InputManager
 public:
 	static bool GetKeyDown(KeyCode key)
 	{
-		// The value 0x8000 contains the bit flag that tests whether the key is currently pressed.
-		const DWORD FLAG = 0x8000;
-		return GetKeyState(static_cast<int>(key)) & FLAG;
+		if (GetKey(key) && keyState[key]) {
+			return false;
+		}
+		else if (GetKey(key) && !keyState[key])
+		{
+			UpdateOneKey(key);
+			return true;
+		}
+		else {
+			UpdateOneKey(key);
+			return false;
+		}
+
 	}
 
-	static bool GetKeyUp(KeyCode key)
+
+private:
+
+	static void UpdateOneKey(KeyCode key)
 	{
-		return !GetKeyDown(key);
+		if (GetKey(key) && !keyState[key])
+		{
+			keyState[key] = true;
+		}
+		else if (!GetKey(key) && keyState[key])
+		{
+			keyState[key] = false;
+		}
 	}
+
+	static bool GetKey(KeyCode key)
+	{
+		// The value 0x8000 contains the bit flag that tests whether the key is currently pressed.
+		const DWORD FLAG = 0x8000;
+		return GetKeyState(static_cast<int>(key))& FLAG;
+	}
+	//False is up and true is down
+	static map<KeyCode, bool> keyState;
 };
 

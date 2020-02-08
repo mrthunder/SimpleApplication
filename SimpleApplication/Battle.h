@@ -3,13 +3,14 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "Fighter.h"
 
 class Unit;
 
 class Battle
 {
 public:
-	Battle(std::shared_ptr<Unit> player, Unit* enemy);
+	Battle(std::vector<std::shared_ptr<Unit>> party);
 	void Update();
 	void Draw(wchar_t* screen,const int screenWidth,const int screenHeight);
 	bool IsBattleOver() const;
@@ -22,12 +23,25 @@ private:
 		}
 
 	}
+	void makeEnemies();
+	void ChooseAction();
+	void SelectAction(); // Action selection controls
+	void SelectEnemies();
+	void PlayActions();
+	bool IsAllDead(std::vector<std::shared_ptr<Unit>> collection);
+	
 private:
 	std::vector<std::string> options{"Attack", "Defend", "Escape" };
 	int selectedOptionIndex = 0;
 	bool isBattleOver = false;
-	std::shared_ptr<Unit> playerPtr;
-	Unit* enemyPtr;
-
+	std::vector<std::shared_ptr<Unit>> playerPartyPtr;
+	std::vector<std::shared_ptr<Unit>> enemies{};
+	std::vector<Fighter> fighters;
+	int fighterIndex = 0;
+	int enemySelectionIndex = 0;
+	bool IsSelectingEnemy = false;
+	bool IsSelectingAction = true;
+	bool IsPlayingActions = false;
+	
 };
 

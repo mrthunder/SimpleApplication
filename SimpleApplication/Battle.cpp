@@ -6,46 +6,33 @@
 
 using namespace std;
 
-Battle::Battle(std::shared_ptr<Unit> player, Unit* enemy)
-	: playerPtr(player), enemyPtr(enemy)
+Battle::Battle(vector<shared_ptr<Unit>> party)
+	: playerPartyPtr(party)
 {
+	makeEnemies();
+	size_t fightersSize = playerPartyPtr.size() + enemies.size();
+	for (size_t i = 0; i < fightersSize; i++)
+	{
+		if (i < playerPartyPtr.size())
+		{
+			fighters.emplace_back(playerPartyPtr[i]);
+		}
+		else {
+			fighters.emplace_back(enemies[i-playerPartyPtr.size()]);
+		}
+		
+	}
 }
 
 void Battle::Update()
 {
-	if (InputManager::GetKeyDown(KeyCode::ArrowDown))
+	if (IsPlayingActions)
 	{
-		selectedOptionIndex++;
-		if (selectedOptionIndex >= options.size())
-		{
-			selectedOptionIndex = options.size() - 1;
-		}
+		PlayActions();
 	}
-	else if (InputManager::GetKeyDown(KeyCode::ArrowUp))
-	{
-		selectedOptionIndex--;
-		if (selectedOptionIndex <=0)
-		{
-			selectedOptionIndex = 0;
-		}
+	else {
+		ChooseAction();
 	}
-	else if (InputManager::GetKeyDown(KeyCode::Return))
-	{
-		switch (selectedOptionIndex)
-		{
-		case 0:// Attack
-			break;
-		case 1: // Defend
-			break;
-		case 2: // Escape
-			isBattleOver = true;
-			break;
-		default:
-			break;
-		}
-	}
-
-	
 }
 
 void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
@@ -53,6 +40,7 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 	const char square = '#';
 	const int UIWidth = 90;
 	const int UIHeight = 27;
+	DrawToScreen(screen, screenWidth, 10, 20, (InputManager::GetKeyDown(KeyCode::ArrowDown) ? "Down" : "Up"));
 	// Drawing the edge
 	for (int i =0; i < screenWidth; i++)
 	{
@@ -75,7 +63,7 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 	for (size_t i = 0; i < options.size();i++)
 	{
 		int optionsHeight = UIHeight + 2 *(i*2+1);
-		if (selectedOptionIndex == i)
+		if (IsSelectingAction && selectedOptionIndex == i)
 		{
 			DrawToScreen(screen, screenWidth, UIWidth + 8, optionsHeight, "> "s+options[i]);
 
@@ -87,18 +75,35 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 		DrawToScreen(screen, screenWidth, UIWidth, optionsHeight+2,separatorLine);
 
 	}
-	// Drawing the player information
-	DrawToScreen(screen, screenWidth, 10, UIHeight + 2, "Name: "+playerPtr->getName());
-	DrawToScreen(screen, screenWidth, 10, UIHeight + 3, "-------------");
-	DrawToScreen(screen, screenWidth, 10, UIHeight + 4, playerPtr->getHealthUI());
 
-	// Drawing the enemy information
-	if (enemyPtr != nullptr)
+	for (size_t i = 0; i < playerPartyPtr.size(); i++)
 	{
-		const int enemyWidth = screenWidth * 0.7;
-		DrawToScreen(screen, screenWidth,enemyWidth , 5, "Name: " + enemyPtr->getName());
-		DrawToScreen(screen, screenWidth, enemyWidth, 6, "-------------");
-		DrawToScreen(screen, screenWidth, enemyWidth, 7, enemyPtr->getHealthUI());
+		int xPos = 10 + 25 * i;
+		// Drawing the player information
+		DrawToScreen(screen, screenWidth, xPos, UIHeight + 2, "Name: " + playerPartyPtr[i]->getName());
+		DrawToScreen(screen, screenWidth, xPos, UIHeight + 3, "-------------");
+		DrawToScreen(screen, screenWidth, xPos, UIHeight + 4, playerPartyPtr[i]->getHealthUI());
+	}
+	
+	
+	const int enemyWidth = screenWidth * 0.2;
+	// Drawing the enemy information
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		int xPos = enemyWidth + 25 * i;
+		if (IsSelectingEnemy && enemySelectionIndex == i)
+		{
+			DrawToScreen(screen, screenWidth, xPos-2, 5, "> Name: " + enemies[i]->getName());
+			DrawToScreen(screen, screenWidth, xPos, 6, "-------------");
+			DrawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
+		}
+		else
+		{
+			DrawToScreen(screen, screenWidth, xPos, 5, "Name: " + enemies[i]->getName());
+			DrawToScreen(screen, screenWidth, xPos, 6, "-------------");
+			DrawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
+		}
+		
 	}
 
 }
@@ -106,4 +111,158 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 bool Battle::IsBattleOver() const
 {
 	return isBattleOver;
+}
+
+void Battle::makeEnemies()
+{
+	size_t randomEnemyCount = (rand() % 3)+1;
+	for (size_t i = 0; i < randomEnemyCount; i++)
+	{
+		enemies.push_back(make_shared<Unit>());
+	}
+}
+
+void Battle::ChooseAction()
+{
+	if (fighters[fighterIndex].getFighter()->IsDead())
+	{
+		fighterIndex++;
+	}
+	else if (fighters[fighterIndex].getFighter()->getUnitType() == Unit::UnitType::Player)
+	{
+		
+		if (IsSelectingAction)
+		{
+			SelectAction();
+		}
+		else if (IsSelectingEnemy)
+		{
+			SelectEnemies();
+		}
+	}
+	else
+	{
+		int playerSelectionIndex = 0;
+		while (playerPartyPtr[playerSelectionIndex]->IsDead())
+		{
+			playerSelectionIndex++;
+		}
+		fighters[fighterIndex].SetTurn(ActionType::Attack, playerPartyPtr[playerSelectionIndex]);
+		fighterIndex++;
+	}
+	if (fighterIndex >= fighters.size())
+	{
+		fighterIndex = 0;
+		IsPlayingActions = true;
+		IsSelectingAction = false;
+	}
+}
+
+void Battle::SelectAction()
+{
+	if (InputManager::GetKeyDown(KeyCode::ArrowDown))
+	{
+		selectedOptionIndex++;
+		if (selectedOptionIndex >= options.size())
+		{
+			selectedOptionIndex = options.size() - 1;
+		}
+	}
+	else if (InputManager::GetKeyDown(KeyCode::ArrowUp))
+	{
+		selectedOptionIndex--;
+		if (selectedOptionIndex <= 0)
+		{
+			selectedOptionIndex = 0;
+		}
+	}
+	else if (InputManager::GetKeyDown(KeyCode::Return))
+	{
+		switch (selectedOptionIndex)
+		{
+		case 0:// Attack
+			IsSelectingAction = false;
+			IsSelectingEnemy = true;
+			break;
+		case 1: // Defend
+			IsSelectingAction = true;
+			fighters[fighterIndex].SetTurn(ActionType::Defend);
+			fighterIndex++;
+			break;
+		case 2: // Escape
+			IsSelectingAction = true;
+			fighters[fighterIndex].SetTurn(ActionType::Escape);
+			fighterIndex++;
+			//isBattleOver = true; TODO - End battle when escape comes up
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void Battle::SelectEnemies()
+{
+	if (InputManager::GetKeyDown(KeyCode::ArrowRight))
+	{
+		enemySelectionIndex++;
+		if (enemySelectionIndex >= enemies.size())
+		{
+			enemySelectionIndex = enemies.size() - 1;
+		}
+	}
+	else if (InputManager::GetKeyDown(KeyCode::ArrowLeft))
+	{
+		enemySelectionIndex--;
+		if (enemySelectionIndex <= 0)
+		{
+			enemySelectionIndex = 0;
+		}
+	}
+	else if (InputManager::GetKeyDown(KeyCode::Return))
+	{
+		if(!enemies[enemySelectionIndex]->IsDead())
+		{
+			IsSelectingAction = true;
+			IsSelectingEnemy = false;
+			fighters[fighterIndex].SetTurn(ActionType::Attack, enemies[enemySelectionIndex]);
+			fighterIndex++;
+		}
+	}
+}
+
+void Battle::PlayActions()
+{
+	if (IsAllDead(playerPartyPtr) || IsAllDead(enemies))
+	{
+		isBattleOver = true;
+	}
+	else
+	{
+		if (!fighters[fighterIndex].getFighter()->IsDead())
+		{
+			fighters[fighterIndex].DoAction();
+		}
+		fighterIndex++;
+		if (fighterIndex >= fighters.size())
+		{
+			IsPlayingActions = false;
+			fighterIndex = 0;
+			IsSelectingAction = true;
+		}
+	}
+
+	
+}
+
+bool Battle::IsAllDead(std::vector<shared_ptr<Unit>> collection)
+{
+	for (const auto& unit : collection)
+	{
+		if (!unit->IsDead())
+		{
+			return false;
+		}
+	}
+	return true;
 }

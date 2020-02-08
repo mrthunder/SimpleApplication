@@ -5,7 +5,12 @@
 class Unit
 {
 public:
-	Unit(std::string name, int health, int attack, int defense, int speed);
+	enum class UnitType {
+		Player,
+		Enemy
+	};
+public:
+	Unit(std::string name, int health, int attack, int defense, int speed, UnitType unitType);
 	Unit();
 private:
 	std::string name;
@@ -16,6 +21,7 @@ private:
 	int speedPoints;
 	bool isDefending;
 	bool isDead;
+	UnitType type;
 public:
 	void Damage(int damage);
 	void Defend();
@@ -23,6 +29,10 @@ public:
 	int getCurrentHealth() const;
 	int getMaxHealth() const;
 	std::string getName() const;
+	UnitType getUnitType() const;
 	std::string getHealthUI() const;
+	int getAttackDamage() const;
+	int getSpeed()const;
+	bool IsDead() const;
 };
 

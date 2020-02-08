@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Unit::Unit(string unitName, int health, int attack, int defense, int speed)
-	: name(unitName), maxHealth(health), attackPoints(attack), defensePoints(defense), speedPoints(speed)
+Unit::Unit(string unitName, int health, int attack, int defense, int speed, Unit::UnitType unitType)
+	: name(unitName), maxHealth(health), attackPoints(attack), defensePoints(defense), speedPoints(speed), type(unitType)
 {
 	currentHealth = maxHealth;
 	isDead = false;
@@ -22,6 +22,7 @@ Unit::Unit()
 	speedPoints = rand() % 5;
 	isDead = false;
 	isDefending = false;
+	type = Unit::UnitType::Enemy;
 }
 
 void Unit::Damage(int damage)
@@ -64,7 +65,27 @@ std::string Unit::getName() const
 	return name;
 }
 
+Unit::UnitType Unit::getUnitType() const
+{
+	return type;
+}
+
 std::string Unit::getHealthUI() const
 {
 	return "Health: "s + to_string(currentHealth) + " / "s + to_string(maxHealth);
+}
+
+int Unit::getAttackDamage() const
+{
+	return attackPoints;
+}
+
+int Unit::getSpeed() const
+{
+	return speedPoints;
+}
+
+bool Unit::IsDead() const
+{
+	return isDead;
 }

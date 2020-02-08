@@ -6,18 +6,19 @@
 #include "Battle.h"
 #include "Unit.h"
 
+
 using namespace std;
 
 Colliseum::Colliseum()
 {
-	playerPtr = make_shared<Unit>("Player"s,100,20,10,3);
-	enemyPtr = new Unit();
-	battlePtr = make_shared<Battle>(playerPtr,enemyPtr);
+	playerParty.push_back(make_shared<Unit>("Protagonist"s, 100, 20, 10, 3, Unit::UnitType::Player));
+	playerParty.push_back(make_shared<Unit>("Sword Character"s, 100, 20, 10, 3, Unit::UnitType::Player));
+	playerParty.push_back(make_shared<Unit>("Other Character"s, 100, 20, 10, 3, Unit::UnitType::Player));
+	battlePtr = make_shared<Battle>(playerParty);
 }
 
 Colliseum::~Colliseum()
 {
-	delete enemyPtr;
 }
 
 void Colliseum::Update(Game* const gameRef)
@@ -34,9 +35,3 @@ void Colliseum::Draw(wchar_t* screen, const int screenHeight, const int screenWi
 	battlePtr->Draw(screen, screenWidth, screenHeight);
 }
 
-void Colliseum::GenerateNewEnemy()
-{
-	delete enemyPtr;
-	enemyPtr = nullptr;
-	enemyPtr = new Unit();
-}

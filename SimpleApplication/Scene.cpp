@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Game.h"
 
-void Scene::Update(Game* const gameRef)
+void Scene::Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
 {
 }
 

@@ -18,6 +18,7 @@ Game::Game()
 	screen = new wchar_t[SCREEN_HEIGHT * SCREEN_WIDTH];
 	console = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(console);
+	SetConsoleScreenBufferSize(console, { SCREEN_WIDTH,SCREEN_HEIGHT });
 	// Initializing the game
 	initialTime = chrono::system_clock::now();
 	ChangeScenes(new MainMenu());
@@ -54,7 +55,7 @@ void Game::GameLoop()
 
 void Game::Update(std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
 {
-	currentScene->Update(this);
+	currentScene->Update(this, time, deltaTime);
 }
 
 void Game::Draw()

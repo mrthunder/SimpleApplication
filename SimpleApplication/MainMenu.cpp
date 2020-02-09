@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void MainMenu::Update(Game* const gameRef)
+void MainMenu::Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
 {
 	if (InputManager::GetKeyDown(KeyCode::ArrowDown))
 	{

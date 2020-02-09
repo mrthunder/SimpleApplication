@@ -21,9 +21,9 @@ Colliseum::~Colliseum()
 {
 }
 
-void Colliseum::Update(Game* const gameRef)
+void Colliseum::Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
 {
-	battlePtr->Update();
+	battlePtr->Update(time);
 	if (battlePtr->IsBattleOver())
 	{
 		gameRef->End();

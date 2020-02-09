@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Unit.h"
 
+
 using namespace std;
 
 Battle::Battle(vector<shared_ptr<Unit>> party)
@@ -22,13 +23,20 @@ Battle::Battle(vector<shared_ptr<Unit>> party)
 		}
 		
 	}
+	lastRecordedTime = 0ms;
 }
 
-void Battle::Update()
+void Battle::Update(chrono::milliseconds time)
 {
+	const auto timeBetweenActions = 1000ms;
 	if (IsPlayingActions)
 	{
-		PlayActions();
+		if (lastRecordedTime + timeBetweenActions < time)
+		{
+			lastRecordedTime = time;
+			PlayActions();
+		}
+		
 	}
 	else {
 		ChooseAction();
@@ -40,7 +48,7 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 	const char square = '#';
 	const int UIWidth = 90;
 	const int UIHeight = 27;
-	DrawToScreen(screen, screenWidth, 10, 20, (InputManager::GetKeyDown(KeyCode::ArrowDown) ? "Down" : "Up"));
+	
 	// Drawing the edge
 	for (int i =0; i < screenWidth; i++)
 	{
@@ -75,6 +83,9 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 		DrawToScreen(screen, screenWidth, UIWidth, optionsHeight+2,separatorLine);
 
 	}
+
+	int messageX = (actionMessage.size() / 2) - 20;
+	DrawToScreen(screen, screenWidth, 10, 10, actionMessage);
 
 	for (size_t i = 0; i < playerPartyPtr.size(); i++)
 	{
@@ -198,6 +209,7 @@ void Battle::SelectAction()
 		default:
 			break;
 		}
+		selectedOptionIndex = 0;
 	}
 }
 
@@ -227,6 +239,7 @@ void Battle::SelectEnemies()
 			IsSelectingEnemy = false;
 			fighters[fighterIndex].SetTurn(ActionType::Attack, enemies[enemySelectionIndex]);
 			fighterIndex++;
+			enemySelectionIndex = 0;
 		}
 	}
 }
@@ -239,9 +252,13 @@ void Battle::PlayActions()
 	}
 	else
 	{
+		if (fighters[fighterIndex].getAction() == ActionType::Escape)
+		{
+			isBattleOver = true;
+		}
 		if (!fighters[fighterIndex].getFighter()->IsDead())
 		{
-			fighters[fighterIndex].DoAction();
+			actionMessage = fighters[fighterIndex].DoAction();
 		}
 		fighterIndex++;
 		if (fighterIndex >= fighters.size())

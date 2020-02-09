@@ -4,14 +4,14 @@
 #include <vector>
 #include <memory>
 #include "Fighter.h"
-
+#include <chrono>
 class Unit;
 
 class Battle
 {
 public:
 	Battle(std::vector<std::shared_ptr<Unit>> party);
-	void Update();
+	void Update(std::chrono::milliseconds time);
 	void Draw(wchar_t* screen,const int screenWidth,const int screenHeight);
 	bool IsBattleOver() const;
 private:
@@ -42,6 +42,7 @@ private:
 	bool IsSelectingEnemy = false;
 	bool IsSelectingAction = true;
 	bool IsPlayingActions = false;
-	
+	std::chrono::milliseconds lastRecordedTime;
+	std::string actionMessage = "";
 };
 

@@ -10,7 +10,7 @@ class MainMenu :
 	public Scene
 {
 public:
-	virtual void Update(Game* const gameRef) override;
+	virtual void Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime) override;
 	virtual void Draw(wchar_t* screen, const int screenHeight, const int screenWidth) override;
 private:
 	std::vector<std::string> options{ "Play", "Exit" };

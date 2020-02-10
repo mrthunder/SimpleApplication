@@ -1,9 +1,17 @@
 // Lucas de Souza Góes (C) 2020
 #pragma once
+
+// Includes
 #include "Scene.h"
 #include <memory>
 #include <vector>
 
+// Using(s)
+using std::chrono::milliseconds;
+using std::shared_ptr;
+using std::vector;
+
+// Forward Declarations
 class Unit;
 class Battle;
 
@@ -13,11 +21,11 @@ class Colliseum :
 public:
 	Colliseum();
 	~Colliseum();
-	virtual void Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime) override;
-	virtual void Draw(wchar_t* screen, const int screenHeight, const int screenWidth) override;
+	virtual void update(Game* const gameRef, milliseconds time) override;
+	virtual void draw(wchar_t* screen, const int screenHeight, const int screenWidth) override;
 private:
-	std::shared_ptr<Battle> battlePtr;
-	std::vector<std::shared_ptr<Unit>> playerParty{};
+	shared_ptr<Battle> battlePtr;
+	vector<shared_ptr<Unit>> playerParty{};
 
 };
 

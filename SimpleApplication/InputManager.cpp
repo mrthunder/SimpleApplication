@@ -1,3 +1,5 @@
+// Lucas de Souza Góes (c) 2020
+
 #include "InputManager.h"
 
 map<KeyCode, bool> InputManager::keyState {

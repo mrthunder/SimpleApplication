@@ -1,11 +1,14 @@
 // Lucas de Souza Góes (C) 2020
 
+// Includes
 #include "Battle.h"
 #include "InputManager.h"
 #include "Unit.h"
 
-
-using namespace std;
+// Using(s)
+using std::literals::chrono_literals::operator""ms;
+using std::literals::string_literals::operator""s;
+using std::make_shared;
 
 Battle::Battle(vector<shared_ptr<Unit>> party)
 	: playerPartyPtr(party)
@@ -26,7 +29,7 @@ Battle::Battle(vector<shared_ptr<Unit>> party)
 	lastRecordedTime = 0ms;
 }
 
-void Battle::Update(chrono::milliseconds time)
+void Battle::update(milliseconds time)
 {
 	const auto timeBetweenActions = 1000ms;
 	if (IsPlayingActions)
@@ -34,16 +37,16 @@ void Battle::Update(chrono::milliseconds time)
 		if (lastRecordedTime + timeBetweenActions < time)
 		{
 			lastRecordedTime = time;
-			PlayActions();
+			playActions();
 		}
 		
 	}
 	else {
-		ChooseAction();
+		chooseAction();
 	}
 }
 
-void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
+void Battle::draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 {
 	const char square = '#';
 	const int UIWidth = 90;
@@ -73,27 +76,27 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 		int optionsHeight = UIHeight + 2 *(i*2+1);
 		if (IsSelectingAction && selectedOptionIndex == i)
 		{
-			DrawToScreen(screen, screenWidth, UIWidth + 8, optionsHeight, "> "s+options[i]);
+			drawToScreen(screen, screenWidth, UIWidth + 8, optionsHeight, "> "s+options[i]);
 
 		}
 		else
 		{
-			DrawToScreen(screen, screenWidth, UIWidth + 10, optionsHeight, options[i]);
+			drawToScreen(screen, screenWidth, UIWidth + 10, optionsHeight, options[i]);
 		}
-		DrawToScreen(screen, screenWidth, UIWidth, optionsHeight+2,separatorLine);
+		drawToScreen(screen, screenWidth, UIWidth, optionsHeight+2,separatorLine);
 
 	}
 
 	int messageX = (actionMessage.size() / 2) - 20;
-	DrawToScreen(screen, screenWidth, 10, 10, actionMessage);
+	drawToScreen(screen, screenWidth, 10, 10, actionMessage);
 
 	for (size_t i = 0; i < playerPartyPtr.size(); i++)
 	{
 		int xPos = 10 + 25 * i;
 		// Drawing the player information
-		DrawToScreen(screen, screenWidth, xPos, UIHeight + 2, "Name: " + playerPartyPtr[i]->getName());
-		DrawToScreen(screen, screenWidth, xPos, UIHeight + 3, "-------------");
-		DrawToScreen(screen, screenWidth, xPos, UIHeight + 4, playerPartyPtr[i]->getHealthUI());
+		drawToScreen(screen, screenWidth, xPos, UIHeight + 2, "Name: " + playerPartyPtr[i]->getName());
+		drawToScreen(screen, screenWidth, xPos, UIHeight + 3, "-------------");
+		drawToScreen(screen, screenWidth, xPos, UIHeight + 4, playerPartyPtr[i]->getHealthUI());
 	}
 	
 	
@@ -104,22 +107,22 @@ void Battle::Draw(wchar_t* screen,const int screenWidth,const int screenHeight)
 		int xPos = enemyWidth + 25 * i;
 		if (IsSelectingEnemy && enemySelectionIndex == i)
 		{
-			DrawToScreen(screen, screenWidth, xPos-2, 5, "> Name: " + enemies[i]->getName());
-			DrawToScreen(screen, screenWidth, xPos, 6, "-------------");
-			DrawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
+			drawToScreen(screen, screenWidth, xPos-2, 5, "> Name: " + enemies[i]->getName());
+			drawToScreen(screen, screenWidth, xPos, 6, "-------------");
+			drawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
 		}
 		else
 		{
-			DrawToScreen(screen, screenWidth, xPos, 5, "Name: " + enemies[i]->getName());
-			DrawToScreen(screen, screenWidth, xPos, 6, "-------------");
-			DrawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
+			drawToScreen(screen, screenWidth, xPos, 5, "Name: " + enemies[i]->getName());
+			drawToScreen(screen, screenWidth, xPos, 6, "-------------");
+			drawToScreen(screen, screenWidth, xPos, 7, enemies[i]->getHealthUI());
 		}
 		
 	}
 
 }
 
-bool Battle::IsBattleOver() const
+bool Battle::getIsBattleOver() const
 {
 	return isBattleOver;
 }
@@ -133,9 +136,9 @@ void Battle::makeEnemies()
 	}
 }
 
-void Battle::ChooseAction()
+void Battle::chooseAction()
 {
-	if (fighters[fighterIndex].getFighter()->IsDead())
+	if (fighters[fighterIndex].getFighter()->isUnitDead())
 	{
 		fighterIndex++;
 	}
@@ -144,21 +147,21 @@ void Battle::ChooseAction()
 		
 		if (IsSelectingAction)
 		{
-			SelectAction();
+			selectAction();
 		}
 		else if (IsSelectingEnemy)
 		{
-			SelectEnemies();
+			selectEnemies();
 		}
 	}
 	else
 	{
 		int playerSelectionIndex = 0;
-		while (playerPartyPtr[playerSelectionIndex]->IsDead())
+		while (playerPartyPtr[playerSelectionIndex]->isUnitDead())
 		{
 			playerSelectionIndex++;
 		}
-		fighters[fighterIndex].SetTurn(ActionType::Attack, playerPartyPtr[playerSelectionIndex]);
+		fighters[fighterIndex].setTurn(ActionType::Attack, playerPartyPtr[playerSelectionIndex]);
 		fighterIndex++;
 	}
 	if (fighterIndex >= fighters.size())
@@ -169,9 +172,9 @@ void Battle::ChooseAction()
 	}
 }
 
-void Battle::SelectAction()
+void Battle::selectAction()
 {
-	if (InputManager::GetKeyDown(KeyCode::ArrowDown))
+	if (InputManager::getKeyDown(KeyCode::ArrowDown))
 	{
 		selectedOptionIndex++;
 		if (selectedOptionIndex >= options.size())
@@ -179,7 +182,7 @@ void Battle::SelectAction()
 			selectedOptionIndex = options.size() - 1;
 		}
 	}
-	else if (InputManager::GetKeyDown(KeyCode::ArrowUp))
+	else if (InputManager::getKeyDown(KeyCode::ArrowUp))
 	{
 		selectedOptionIndex--;
 		if (selectedOptionIndex <= 0)
@@ -187,7 +190,7 @@ void Battle::SelectAction()
 			selectedOptionIndex = 0;
 		}
 	}
-	else if (InputManager::GetKeyDown(KeyCode::Return))
+	else if (InputManager::getKeyDown(KeyCode::Return))
 	{
 		switch (selectedOptionIndex)
 		{
@@ -197,14 +200,13 @@ void Battle::SelectAction()
 			break;
 		case 1: // Defend
 			IsSelectingAction = true;
-			fighters[fighterIndex].SetTurn(ActionType::Defend);
+			fighters[fighterIndex].setTurn(ActionType::Defend);
 			fighterIndex++;
 			break;
 		case 2: // Escape
 			IsSelectingAction = true;
-			fighters[fighterIndex].SetTurn(ActionType::Escape);
+			fighters[fighterIndex].setTurn(ActionType::Escape);
 			fighterIndex++;
-			//isBattleOver = true; TODO - End battle when escape comes up
 			break;
 		default:
 			break;
@@ -213,9 +215,9 @@ void Battle::SelectAction()
 	}
 }
 
-void Battle::SelectEnemies()
+void Battle::selectEnemies()
 {
-	if (InputManager::GetKeyDown(KeyCode::ArrowRight))
+	if (InputManager::getKeyDown(KeyCode::ArrowRight))
 	{
 		enemySelectionIndex++;
 		if (enemySelectionIndex >= enemies.size())
@@ -223,7 +225,7 @@ void Battle::SelectEnemies()
 			enemySelectionIndex = enemies.size() - 1;
 		}
 	}
-	else if (InputManager::GetKeyDown(KeyCode::ArrowLeft))
+	else if (InputManager::getKeyDown(KeyCode::ArrowLeft))
 	{
 		enemySelectionIndex--;
 		if (enemySelectionIndex <= 0)
@@ -231,22 +233,22 @@ void Battle::SelectEnemies()
 			enemySelectionIndex = 0;
 		}
 	}
-	else if (InputManager::GetKeyDown(KeyCode::Return))
+	else if (InputManager::getKeyDown(KeyCode::Return))
 	{
-		if(!enemies[enemySelectionIndex]->IsDead())
+		if(!enemies[enemySelectionIndex]->isUnitDead())
 		{
 			IsSelectingAction = true;
 			IsSelectingEnemy = false;
-			fighters[fighterIndex].SetTurn(ActionType::Attack, enemies[enemySelectionIndex]);
+			fighters[fighterIndex].setTurn(ActionType::Attack, enemies[enemySelectionIndex]);
 			fighterIndex++;
 			enemySelectionIndex = 0;
 		}
 	}
 }
 
-void Battle::PlayActions()
+void Battle::playActions()
 {
-	if (IsAllDead(playerPartyPtr) || IsAllDead(enemies))
+	if (isAllDead(playerPartyPtr) || isAllDead(enemies))
 	{
 		isBattleOver = true;
 	}
@@ -256,9 +258,9 @@ void Battle::PlayActions()
 		{
 			isBattleOver = true;
 		}
-		if (!fighters[fighterIndex].getFighter()->IsDead())
+		if (!fighters[fighterIndex].getFighter()->isUnitDead())
 		{
-			actionMessage = fighters[fighterIndex].DoAction();
+			actionMessage = fighters[fighterIndex].doAction();
 		}
 		fighterIndex++;
 		if (fighterIndex >= fighters.size())
@@ -272,11 +274,11 @@ void Battle::PlayActions()
 	
 }
 
-bool Battle::IsAllDead(std::vector<shared_ptr<Unit>> collection)
+bool Battle::isAllDead(std::vector<shared_ptr<Unit>> collection)
 {
 	for (const auto& unit : collection)
 	{
-		if (!unit->IsDead())
+		if (!unit->isUnitDead())
 		{
 			return false;
 		}

@@ -1,4 +1,6 @@
 // Lucas de Souza Góes (C) 2020
+ 
+// Includes
 #include "Colliseum.h"
 #include "InputManager.h"
 #include "Game.h"
@@ -6,8 +8,9 @@
 #include "Battle.h"
 #include "Unit.h"
 
+// Using(s)
+using std::literals::string_literals::operator""s;
 
-using namespace std;
 
 Colliseum::Colliseum()
 {
@@ -21,17 +24,17 @@ Colliseum::~Colliseum()
 {
 }
 
-void Colliseum::Update(Game* const gameRef, std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
+void Colliseum::update(Game* const gameRef, milliseconds time)
 {
-	battlePtr->Update(time);
-	if (battlePtr->IsBattleOver())
+	battlePtr->update(time);
+	if (battlePtr->getIsBattleOver())
 	{
-		gameRef->End();
+		gameRef->end();
 	}
 }
 
-void Colliseum::Draw(wchar_t* screen, const int screenHeight, const int screenWidth)
+void Colliseum::draw(wchar_t* screen, const int screenHeight, const int screenWidth)
 {
-	battlePtr->Draw(screen, screenWidth, screenHeight);
+	battlePtr->draw(screen, screenWidth, screenHeight);
 }
 

@@ -1,12 +1,15 @@
 // Lucas de Souza Góes (C) 2020
 
-#include <iostream>
+//Includes
 #include "Game.h"
+#include <memory>
 
-using namespace std;
+// Using(s)
+using std::unique_ptr;
 
 int main()
 {
+	// Game Start!!!
 	unique_ptr<Game> game(new Game());
 }
 

@@ -1,9 +1,16 @@
+// Lucas de Souza Góes (c) 2020
+
+// Includes
 #include "Unit.h"
 #include <algorithm>
 
-using namespace std;
+// Using
+using std::literals::string_literals::operator""s;
+using std::clamp;
+using std::to_string;
 
-Unit::Unit(string unitName, int health, int attack, int defense, int speed, Unit::UnitType unitType)
+
+Unit::Unit(string unitName, int health, int attack, int defense, int speed, UT unitType)
 	: name(unitName), maxHealth(health), attackPoints(attack), defensePoints(defense), speedPoints(speed), type(unitType)
 {
 	currentHealth = maxHealth;
@@ -22,10 +29,10 @@ Unit::Unit()
 	speedPoints = rand() % 5;
 	isDead = false;
 	isDefending = false;
-	type = Unit::UnitType::Enemy;
+	type = UnitType::Enemy;
 }
 
-void Unit::Damage(int damage)
+void Unit::damage(int damage)
 {
 	int currentDamage = damage - (defensePoints/2);
 	if (isDefending)
@@ -40,12 +47,12 @@ void Unit::Damage(int damage)
 	}
 }
 
-void Unit::Defend()
+void Unit::defend()
 {
 	isDefending = true;
 }
 
-void Unit::ResetTurn()
+void Unit::resetTurn()
 {
 	isDefending = false;
 }
@@ -60,17 +67,17 @@ int Unit::getMaxHealth() const
 	return maxHealth;
 }
 
-std::string Unit::getName() const
+string Unit::getName() const
 {
 	return name;
 }
 
-Unit::UnitType Unit::getUnitType() const
+UT Unit::getUnitType() const
 {
 	return type;
 }
 
-std::string Unit::getHealthUI() const
+string Unit::getHealthUI() const
 {
 	return "Health: "s + to_string(currentHealth) + " / "s + to_string(maxHealth);
 }
@@ -85,7 +92,7 @@ int Unit::getSpeed() const
 	return speedPoints;
 }
 
-bool Unit::IsDead() const
+bool Unit::isUnitDead() const
 {
 	return isDead;
 }

@@ -1,13 +1,17 @@
 // Lucas de Souza Góes (C) 2020
+
+// Includes
 #include "Game.h"
 #include <thread>
-//#include <chrono>
 #include <Windows.h>
 #include "MainMenu.h"
 
-using namespace std;
+// Using(s)
+using std::chrono::duration_cast;
+using std::literals::chrono_literals::operator""ms;
+using std::this_thread::sleep_for;
 
-
+// Constants
 const int SCREEN_HEIGHT = 40;
 const int SCREEN_WIDTH = 120;
 
@@ -20,10 +24,10 @@ Game::Game()
 	SetConsoleActiveScreenBuffer(console);
 	SetConsoleScreenBufferSize(console, { SCREEN_WIDTH,SCREEN_HEIGHT });
 	// Initializing the game
-	initialTime = chrono::system_clock::now();
-	ChangeScenes(new MainMenu());
+	initialTime = system_clock::now();
+	changeScenes(new MainMenu());
 	this->isGameRunning = true;
-	this->GameLoop();
+	this->gameLoop();
 }
 
 Game::~Game()
@@ -31,34 +35,31 @@ Game::~Game()
 	delete currentScene;
 }
 
-void Game::GameLoop()
+void Game::gameLoop()
 {
 	while (isGameRunning)
 	{
-		
-		currentTime = chrono::system_clock::now();
-		auto timer = chrono::duration_cast<chrono::milliseconds>(endTimer - initialTime);
-		auto deltaTime = chrono::duration_cast<chrono::milliseconds>(endTimer - startTimer);
-		startTimer = chrono::system_clock::now();
-		Update(timer,deltaTime);
-		Draw();
-		endTimer = chrono::system_clock::now();
+		currentTime = system_clock::now();
+		timer = duration_cast<milliseconds>(endTimer - initialTime);
+		deltaTime = duration_cast<milliseconds>(endTimer - startTimer);
+		startTimer = system_clock::now();
+		update(timer);
+		draw();
+		endTimer = system_clock::now();
 		if (50ms - deltaTime > 0ms)
 		{
-			std::this_thread::sleep_for(50ms - deltaTime);
+			sleep_for(50ms - deltaTime);
 		}
-		
 	}
-	
 }
 
 
-void Game::Update(std::chrono::milliseconds time, std::chrono::milliseconds deltaTime)
+void Game::update(milliseconds time)
 {
-	currentScene->Update(this, time, deltaTime);
+	currentScene->update(this, time);
 }
 
-void Game::Draw()
+void Game::draw()
 {
 	constexpr COORD startCoordinates = { 0,0 };
 	DWORD bytesWritten = 0;
@@ -70,19 +71,19 @@ void Game::Draw()
 	}
 	// Repositioning the cursor at the top left
 	WriteConsoleOutputCharacter(console, screen, SCREEN_WIDTH * SCREEN_HEIGHT, startCoordinates, &bytesWritten);
-	currentScene->Draw(screen, SCREEN_HEIGHT, SCREEN_WIDTH);
+	currentScene->draw(screen, SCREEN_HEIGHT, SCREEN_WIDTH);
 	screen[screenLength - 1] = '\0';
 	WriteConsoleOutputCharacter(console, screen, SCREEN_WIDTH * SCREEN_HEIGHT, startCoordinates, &bytesWritten);
 	
 }
 
-void Game::End()
+void Game::end()
 {
 	isGameRunning = false;
 	CloseHandle(console);
 }
 
-void Game::ChangeScenes(Scene* newScene)
+void Game::changeScenes(Scene* newScene)
 {
 	if (currentScene != nullptr)
 	{

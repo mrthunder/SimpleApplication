@@ -1,7 +1,11 @@
+// Lucas de Souza Góes (c) 2020
 #pragma once
+
+// Includes
 #include <Windows.h>
 #include <map>
 
+// Using
 using std::map;
 
 enum class KeyCode : int
@@ -18,18 +22,19 @@ enum class KeyCode : int
 class InputManager
 {
 public:
-	static bool GetKeyDown(KeyCode key)
+	// Returns true if the key provided was pressed this frame
+	static bool getKeyDown(KeyCode key)
 	{
-		if (GetKey(key) && keyState[key]) {
+		if (getKey(key) && keyState[key]) {
 			return false;
 		}
-		else if (GetKey(key) && !keyState[key])
+		else if (getKey(key) && !keyState[key])
 		{
-			UpdateOneKey(key);
+			updateOneKey(key);
 			return true;
 		}
 		else {
-			UpdateOneKey(key);
+			updateOneKey(key);
 			return false;
 		}
 
@@ -38,24 +43,27 @@ public:
 
 private:
 
-	static void UpdateOneKey(KeyCode key)
+	// Update the key on the map
+	static void updateOneKey(KeyCode key)
 	{
-		if (GetKey(key) && !keyState[key])
+		if (getKey(key) && !keyState[key])
 		{
 			keyState[key] = true;
 		}
-		else if (!GetKey(key) && keyState[key])
+		else if (!getKey(key) && keyState[key])
 		{
 			keyState[key] = false;
 		}
 	}
 
-	static bool GetKey(KeyCode key)
+	// Get the state of the key, if pressed true otherwise false
+	static bool getKey(KeyCode key)
 	{
 		// The value 0x8000 contains the bit flag that tests whether the key is currently pressed.
 		const DWORD FLAG = 0x8000;
 		return GetKeyState(static_cast<int>(key))& FLAG;
 	}
+
 	//False is up and true is down
 	static map<KeyCode, bool> keyState;
 };

@@ -1,28 +1,39 @@
 // Lucas de Souza Góes (C) 2020
 #pragma once
-#include <chrono>
-class Scene;
 
+//Include
+#include <chrono>
+
+// Using(s)
+using std::chrono::milliseconds;
+using std::chrono::time_point;
+using std::chrono::system_clock;
+
+// Forward Declaration
+class Scene;
 
 class Game
 {
 public:
-	Game();
-	~Game();
-	void End();
-	void ChangeScenes(Scene* newScene);
+	Game(); //Ctor
+	~Game(); //Dtor
+	void end(); // Ends the game
+	void changeScenes(Scene* newScene); // Change from the current scene to the next
 private:
-	void GameLoop();
-	void Update(std::chrono::milliseconds time, std::chrono::milliseconds deltaTime);
-	void Draw();
+	void gameLoop(); // Contains the game loop
+	void update(milliseconds time); // This method will execute every frame
+	void draw(); // This method will execute every frame
 private:
-	bool isGameRunning;
-	wchar_t* screen;
-	void* console;
-	Scene* currentScene;
-	std::chrono::time_point<std::chrono::system_clock> initialTime;
-	std::chrono::time_point<std::chrono::system_clock> currentTime;
-	std::chrono::time_point<std::chrono::system_clock> startTimer;
-	std::chrono::time_point<std::chrono::system_clock> endTimer;
+	bool isGameRunning; // This property keeps the game looping
+	wchar_t* screen; // This is the screen buffer, 
+	                 // and what ever gets add to the buffer shows on the screen
+	void* console; // Console Handle
+	Scene* currentScene; // Current Scene being displayed
+	time_point<system_clock> initialTime;  // When the game started
+	time_point<system_clock> currentTime; // The current time
+	time_point<system_clock> startTimer; // Start of the frame
+	time_point<system_clock> endTimer; // End of the frame
+	milliseconds timer; // In game timer
+	milliseconds deltaTime; // How long did the frame took to finish
 };
 

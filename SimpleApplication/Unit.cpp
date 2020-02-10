@@ -10,7 +10,7 @@ using std::clamp;
 using std::to_string;
 
 
-Unit::Unit(string unitName, int health, int attack, int defense, int speed, UT unitType)
+Unit::Unit(string unitName, int health, int attack, int defense, int speed, Unit::UnitType unitType)
 	: name(unitName), maxHealth(health), attackPoints(attack), defensePoints(defense), speedPoints(speed), type(unitType)
 {
 	currentHealth = maxHealth;
@@ -72,7 +72,7 @@ string Unit::getName() const
 	return name;
 }
 
-UT Unit::getUnitType() const
+Unit::UnitType Unit::getUnitType() const
 {
 	return type;
 }

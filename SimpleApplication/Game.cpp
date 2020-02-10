@@ -23,6 +23,13 @@ Game::Game()
 	console = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(console);
 	SetConsoleScreenBufferSize(console, { SCREEN_WIDTH,SCREEN_HEIGHT });
+
+	//Remove the cursor from the screen
+	CONSOLE_CURSOR_INFO cursorInfo;
+	GetConsoleCursorInfo(console, &cursorInfo);
+	cursorInfo.bVisible = false;
+	SetConsoleCursorInfo(console, &cursorInfo);
+
 	// Initializing the game
 	initialTime = system_clock::now();
 	changeScenes(new MainMenu());
@@ -70,9 +77,8 @@ void Game::draw()
 		screen[i] = ' ';
 	}
 	// Repositioning the cursor at the top left
-	WriteConsoleOutputCharacter(console, screen, SCREEN_WIDTH * SCREEN_HEIGHT, startCoordinates, &bytesWritten);
+	SetConsoleCursorPosition(console, { 0,0 });
 	currentScene->draw(screen, SCREEN_HEIGHT, SCREEN_WIDTH);
-	screen[screenLength - 1] = '\0';
 	WriteConsoleOutputCharacter(console, screen, SCREEN_WIDTH * SCREEN_HEIGHT, startCoordinates, &bytesWritten);
 	
 }
